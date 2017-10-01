@@ -441,55 +441,55 @@ public function SearchEngine($comuna,$desde,$hasta,$dorm,$banos){
     $err->ErrorFile(" Evaluacion comuna: ". (bool)empty($lcomuna) ." desde: ". (bool)empty($ldesde)  ." hasta ". (bool)empty($lhasta) ." banos ". (bool)empty($lbanos)." Dorm ".(bool)empty($ldorm));
     
     //SOLO BAÑOS
-     if ( $lcomuna == "" && $ldesde == ""  && $lhasta == "" &&  $ldesde == "" && $lbanos != "" ){
+     if ( $lcomuna === "" && $ldesde === ""  && $lhasta === "" &&  $ldesde === "" && $lbanos !== "" ){
         
         $i = 0;
     }
     
     //SOLO DORMITORIOS
-    if ( $lcomuna == "" && $ldesde == ""  && $lhasta == "" && $lbanos == "" && $ldorm != "" ){
+    if ( $lcomuna === "" && $ldesde === ""  && $lhasta === "" && $lbanos === "" && $ldorm !== "" ){
         
         $i = 1;
     }
     
     //SOLO COMUNA
-    if ( $lcomuna =! "" && $ldesde == ""  && $lhasta == "" && $lbanos == "" && $ldorm == "" ){
+    if ( $lcomuna ==! "" && $ldesde === ""  && $lhasta === "" && $lbanos === "" && $ldorm === "" ){
         
         $i = 2;
     }
     
     //SOLO DESDE
-     if ( $lcomuna == "" && $ldesde =! ""  && $lhasta == "" && $lbanos == "" && $ldorm == "" ){
+     if ( $lcomuna === "" && $ldesde ==! ""  && $lhasta === "" && $lbanos === "" && $ldorm === "" ){
         
         $i = 3;
     }
     
     //SOLO DESDE & HASTA
-     if ( empty($lcomuna)==1 && empty($ldesde)!=1 && empty($lhasta)!=1  && empty($lbanos)== 1 && empty($ldorm) == 1 ){
+     if ( $lcomuna==="" && $ldesde!=="" && $lhasta!==""  && $lbanos=== "" && $ldorm === "" ){
         
         $i = 4;
     }
     
     //SOLO COMUNA & DESDE & HASTA
-     if ( empty($lcomuna)!=1  && empty($ldesde)!=1 && empty($lhasta)!=1 && empty($lbanos)==1 && empty($ldorm)==1){
+     if ( $lcomuna!==""  && $ldesde!=="" && $lhasta!==1 && $lbanos==="" && $ldorm===""){
         
         $i = 5;
     }
     
     //SOLO COMUNA & DESDE & HASTA & DORMITORIOS
-      if ( $lcomuna != "" && $ldesde =! ""  && $lhasta != "" && $lbanos == "" && $ldorm != "" ){
+      if ( $lcomuna !== "" && $ldesde ==! ""  && $lhasta !== "" && $lbanos === "" && $ldorm !== "" ){
         
         $i = 6;
     }
     
-    if ( $lcomuna != "" && $ldesde =! ""  && $lhasta != "" && $lbanos != "" && $ldorm != "" ){
+    if ( $lcomuna !== "" && $ldesde ==! ""  && $lhasta !== "" && $lbanos !== "" && $ldorm !== "" ){
         
         $i = 7;
     }
     
     $err->ErrorFile("Seleccion de Search Engine: $i");
     
-    if (empty($comuna) && empty($desde) && empty($hasta) && empty($dorm) && empty($banos)){
+    if ($lcomuna==="" && $ldesde==="" && $lhasta==="" && $ldorm==="" && $lbanos===""){
         
         return $this->JsonErrorI("Debe colocar una opcion", 500);
         
@@ -511,7 +511,7 @@ public function SearchEngine($comuna,$desde,$hasta,$dorm,$banos){
         $sql = "SELECT * FROM braiz where comuna=".$lcomuna;
         break;       
     case 3:
-        $sql = "SELECT * FROM braiz where ufprecio >= ".(string)$ldesde;
+        $sql = "SELECT * FROM braiz where ufprecio >= ".$ldesde;
         break;            
     case 4:
         $sql = "SELECT * FROM braiz where ufprecio >= ".$ldesde." and ufprecio <= ".$lhasta." ";
