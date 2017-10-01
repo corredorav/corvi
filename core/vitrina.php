@@ -387,7 +387,28 @@ function showResponse(data)  {
 } 
     
     </script>
-    
+    <script>
+     function AddFavorite(){
+
+//make an ajax call and get status value using the same 'id'
+        var rolid= $('input[name=rolid]').val();
+        $.ajax({
+
+        type:"POST",//or POST
+        url:'favoritep.php',
+                           //  (or whatever your url is)
+        data:{rolid:rolid},
+        //can send multipledata like {data1:var1,data2:var2,data3:var3
+        //can use dataType:'text/html' or 'json' if response type expected 
+        success:function(responsedata){
+               // process on data
+               alert("got response as "+"'"+responsedata+"'");
+
+        }
+     })
+
+}
+</script>
     
     
     
@@ -523,8 +544,35 @@ function showResponse(data)  {
 					<div class="collapse navbar-collapse">
                                             <form id="searcher" action="vitrina.php" method="post" class="navbar-form nav-align-center" role="search">
 							<div class="form-group">
-								<input type="text" name="comuna" value="<?php echo $comuna;?>" class="form-control" placeholder="Comuna">
-								<span class="material-input"></span>
+								
+                                                                <?php	
+                                                                                                        
+                                                                                                        //$errline->ErrorFile("Comuna ->".$data_perfil["comuna"]);
+                                                                                                        echo '<select id="comuna" name="comuna">';
+                                                                                                            if ((int)$data_perfil["comuna"]==1){echo '<option value="1" selected>Cerrillos</option>';}else{echo '<option value="1">Cerrillos</option>';};                                                                     
+                                                                                                            if ((int)$data_perfil["comuna"]==2){echo '<option value="2" selected>Cerro Navia</option>';}else{echo '<option value="2">Cerro Navia</option>';};
+                                                                                                            if ((int)$data_perfil["comuna"]==3){echo '<option value="3" selected>Conchalí</option>';}else{echo '<option value="3">Conchalí</option>';};
+                                                                                                            if ((int)$data_perfil["comuna"]==4){echo '<option value="4" selected>El Bosque</option>';}else{echo '<option value="4">El Bosque</option>';};
+                                                                                                            if ((int)$data_perfil["comuna"]==5){echo '<option value="5" selected>Estación Central</option>';}else{echo '<option value="5">Estacion Central</option>';};
+                                                                                                            if ((int)$data_perfil["comuna"]==6){echo '<option value="6" selected>Huechuraba</option>';}else{echo '<option value="6">Huechuraba</option>';};
+                                                                                                            if ((int)$data_perfil["comuna"]==7){echo '<option value="7" selected>Independencia</option>';}else{echo '<option value="7">Independencia</option>';};
+                                                                                                            if ((int)$data_perfil["comuna"]==8){echo '<option value="8" selected>La Cistena</option>';}else{echo '<option value="8">La Cisterna</option>';};
+                                                                                                            if ((int)$data_perfil["comuna"]==9){echo '<option value="9" selected>La Florida</option>';}else{echo '<option value="9">La Florida</option>';};
+                                                                                                            if ((int)$data_perfil["comuna"]==10){echo '<option value="10" selected>La Pintana</option>';}else{echo '<option value="10">La Pintana</option>';};
+                                                                                                            if ((int)$data_perfil["comuna"]==11){echo '<option value="11" selected>La Granja</option>';}else{echo '<option value="11">La Granja</option>';};
+                                                                                                            if ((int)$data_perfil["comuna"]==12){echo '<option value="12" selected>La Reina</option>';}else{echo '<option value="11">La Reina</option>';};
+                                                                                                            if ((int)$data_perfil["comuna"]==13){echo '<option value="13" selected>Las Condes</option>';}else{echo '<option value="13">Las Condes</option>';};
+                                                                                                            if ((int)$data_perfil["comuna"]==14){echo '<option value="14" selected>Lo Barnenechea</option>';}else{echo '<option value="14">Lo Barnechea</option>';};
+                                                                                                          
+                                                                                                   echo '</select>';
+                                                                                                        
+                                                                                                ?> 
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
 							</div>
                                                         <div class="form-group">
 								<input type="text" name="desde" value="<?php echo $desde;?>" class="form-control" placeholder="Desde UF">
@@ -611,11 +659,19 @@ function showResponse(data)  {
 												<td class="text-primary">'.$data_p["mtscuad"].'</td>
 	                                        </tr>';
                                                 echo '<tr>
-	                                        	<td>Comuna</td>
-	                                        	
-												<td class="text-primary">'.$data_p["comuna"].'</td>
-	                                        </tr>
-	                                    </tbody>
+	                                        	<td>Comuna</td>';
+                                                        $comu = $data_p["comuna"];
+	                                        	$mycomuna = $results->DisplaySQLResults("SELECT nombre FROM comunas where idcom=".$comu);
+												echo '<td class="text-primary">'.$mycomuna["nombre"].'</td>
+	                                        </tr>';
+                                                 echo '<tr>
+	                                        	<td>Favorito</td>                                        	
+                                                        <td class="text-primary"><form action="favoritep.php" method="POST"><a href="#" name="id" onClick="AddFavorite()">'; 
+                                                        if($results->GetFavorite($data_p["rolid"],$_SESSION['myemail']))echo '<i class="material-icons">favorite</i>'; else echo '<i class="material-icons">favorite_border</i>'; 
+                                                echo'</a><input type="hidden" name="rolid" value="'.$data_p["rolid"].'"></form></td>'; 
+                                                echo '</tr>';
+                                               
+	                                    echo '</tbody>
 	                                </table>';
 ?>
 	                            </div>

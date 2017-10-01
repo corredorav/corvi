@@ -49,9 +49,117 @@ public function GetMailFromRolId($rolid){
     
     
     
+}
+
+public function DelFavorite($rolid,$email){
+    
+    
+    $myrolid = $rolid;   
+    
+  global $err;
+
+    $sql = "DELETE FROM favoritos where rolid=".$myrolid." and email='".$email."'";
+    
+    $err->ErrorFile($sql);
+    
+    $result = $this->conn->query($sql);
+    
+    if ( $result == false) {
+ 
+                return $this->JsonErrorI("Error al eliminar Favorito",500);
+            
+        } else {
+                return $this->JsonErrorI("Favorito Eliminado",302);;     
+                } 
+    
+    
+    
+    
+    
+    
+}
+
+
+
+public function GetFavorite($rolid,$email){
+    
+ $myrolid = $rolid;   
+    
+  global $err;
+
+    $sql = "SELECT rolid FROM favoritos where rolid=".$myrolid." and email='".$email."' limit 0,1";
+    
+    $err->ErrorFile($sql);
+    
+    $result = $this->conn->query($sql);
+    
+    if ( $result->num_rows > 0) {
+ 
+                return true;
+            
+        } else {
+                return false;     
+                }  
+    
+    
+    
+}
+
+
+public function InsertintoFav($correo,$rolid){
+    
+    $lcorreo = $correo;
+    $lrolid = $rolid;
+    
+    global $err;
+    // Obtiene el Rut en base al correo
+    $errcd = $this->GetRutID($lcorreo);
+    //Decodifica el error Json
+    $errfinal = json_decode($errcd);
+    //retorna error 500 en caso de no encontrar asociasion
+  if ((int)$errfinal->{'code'}==500){
+          $this->errconn = $this->conn->error;
+          $this->conn->close();     
+          return $this->JsonErrorI($this->errconn,500);   
+  }
+  else
+      $rutID = $errfinal->{'message'};
+      
+      
+   if (!$this->GetFavorite($lrolid, $lcorreo)){   
+      
+    
+  $sql = "INSERT INTO `favoritos`
+(
+rolid,
+`rut`,
+`email`)
+VALUES
+(".
+$lrolid.",'".
+ $rutID."','".
+ $correo."')";  
+    
+   $err->ErrorFile("SearhFindShow()-InsertintoFav " .$sql);  
+  
+   if ($this->conn->query($sql) > 0) {
+                $this->conn->close();
+                return $this->JsonErrorI("Agregado a Favoritos",200);
+            
+        } else {
+                $this->errconn = $this->conn->error;
+                $this->conn->close();     
+                return $this->JsonErrorI($this->errconn,500);     
+                }
+    
+    
+   }
+   else
+       echo $this->DelFavorite ($lrolid, $lcorreo);
+    
+    
 }   
-   
-   
+
    
    
 public function CountAllRows($sql){
@@ -318,66 +426,76 @@ public function SearchEngine($comuna,$desde,$hasta,$dorm,$banos){
     
     
     global $err;
-    $lcomuna = $comuna;
-    $ldesde = $desde;
-    $lhasta = $hasta;
-    $ldorm = $dorm;
-    $lbanos = $banos;
+    $lcomuna = trim($comuna);
+    $ldesde = trim($desde);
+    $lhasta = trim($hasta);
+    $ldorm = trim($dorm);
+    $lbanos = trim($banos);
     
     
     
     $i = -1;
     
     
-     if ( $comuna == "" && $desde == ""  && $hasta == "" &&  $desde == "" && $banos != "" ){
+    $err->ErrorFile("SearchEngine Data Comuna: $lcomuna Desde :$ldesde Hasta: $lhasta Dorm: $ldorm  Banos: $lbanos");
+    $err->ErrorFile(" Evaluacion comuna: ". (bool)empty($lcomuna) ." desde: ". (bool)empty($ldesde)  ." hasta ". (bool)empty($lhasta) ." banos ". (bool)empty($lbanos)." Dorm ".(bool)empty($ldorm));
+    
+    //SOLO BAÑOS
+     if ( $lcomuna == "" && $ldesde == ""  && $lhasta == "" &&  $ldesde == "" && $lbanos != "" ){
         
         $i = 0;
     }
     
-    if ( $comuna == "" && $desde == ""  && $hasta == "" && $banos == "" && $dorm != "" ){
+    //SOLO DORMITORIOS
+    if ( $lcomuna == "" && $ldesde == ""  && $lhasta == "" && $lbanos == "" && $ldorm != "" ){
         
         $i = 1;
     }
     
-    if ( $comuna =! "" && $desde == ""  && $hasta == "" && $banos == "" && $dorm == "" ){
+    //SOLO COMUNA
+    if ( $lcomuna =! "" && $ldesde == ""  && $lhasta == "" && $lbanos == "" && $ldorm == "" ){
         
         $i = 2;
     }
     
-     if ( $comuna == "" && $desde =! ""  && $hasta == "" && $banos == "" && $dorm == "" ){
+    //SOLO DESDE
+     if ( $lcomuna == "" && $ldesde =! ""  && $lhasta == "" && $lbanos == "" && $ldorm == "" ){
         
         $i = 3;
     }
     
-     if ( $comuna == "" && $desde =! ""  && $hasta != "" && $banos == "" && $dorm == "" ){
+    //SOLO DESDE & HASTA
+     if ( empty($lcomuna)==1 && empty($ldesde)!=1 && empty($lhasta)!=1  && empty($lbanos)== 1 && empty($ldorm) == 1 ){
         
         $i = 4;
     }
     
-     if ( $comuna != "" && $desde =! ""  && $hasta != "" && $banos == "" && $dorm == "" ){
+    //SOLO COMUNA & DESDE & HASTA
+     if ( empty($lcomuna)!=1  && empty($ldesde)!=1 && empty($lhasta)!=1 && empty($lbanos)==1 && empty($ldorm)==1){
         
         $i = 5;
     }
     
-      if ( $comuna != "" && $desde =! ""  && $hasta != "" && $banos == "" && $dorm != "" ){
+    //SOLO COMUNA & DESDE & HASTA & DORMITORIOS
+      if ( $lcomuna != "" && $ldesde =! ""  && $lhasta != "" && $lbanos == "" && $ldorm != "" ){
         
         $i = 6;
     }
     
-    if ( $comuna != "" && $desde =! ""  && $hasta != "" && $banos != "" && $dorm != "" ){
+    if ( $lcomuna != "" && $ldesde =! ""  && $lhasta != "" && $lbanos != "" && $ldorm != "" ){
         
         $i = 7;
     }
     
+    $err->ErrorFile("Seleccion de Search Engine: $i");
     
-    
-    if (is_null($comuna) && is_null($desde) && is_null($hasta) && is_null($dorm) && is_null($banos)){
+    if (empty($comuna) && empty($desde) && empty($hasta) && empty($dorm) && empty($banos)){
         
         return $this->JsonErrorI("Debe colocar una opcion", 500);
         
     }
     
-    $err->ErrorFile("SearchEngine $comuna $desde $hasta $dorm, $banos");
+    
     
     
     
