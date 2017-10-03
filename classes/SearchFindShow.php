@@ -533,7 +533,101 @@ public function SearchEngine($comuna,$desde,$hasta,$dorm,$banos){
     
 }
 
+public function InsertDocIntoDB($NameDoc,$TypeDoc){
     
+
+    switch ($TypeDoc) {
+        case "cert_hipoteca":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',1,'$NameDoc',1)";     
+
+            break;
+        case "inscri_dominio":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',2,'$NameDoc',1)";
+
+            break;
+        case "titulos_dominio":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',3,'$NameDoc',1)";
+            
+            break;
+        case "inscri_dominio":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',4,'$NameDoc',1)";
+
+            break;
+        case "titulos_dominio":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',5,'$NameDoc',1)";
+
+            break;
+        case "cert_avaluo":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',6,'$NameDoc',1)";
+
+            break;
+        case "cert_deuda":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',7,'$NameDoc',1)";
+
+            break;
+        case "cert_expro_muni":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',8,'$NameDoc',1)";
+            
+            break;
+        case "cert_expro_fisc":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',9,'$NameDoc',1)";
+            
+            break;
+        case "foto_planos":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',10,'$NameDoc',1)";
+            
+            break;
+        case "cuen_basicas":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',11,'$NameDoc',1)";
+            
+            break;
+        
+        
+        
+
+        default:
+            break;
+    }
+    
+    
+    
+    
+    $sql2="INSERT INTO braizperuser (fk_rut,fk_rolid) VALUES('".$rutID."',".$rol.")";  
+
+
+
+
+
+
+
+ $err->ErrorFile("SearchFindShow()->Insertabienraiz ".$sql.$sql2);  
+  
+   if ($this->conn->query($sql) > 0 && $this->conn->query($sql2) > 0) {
+                $this->conn->close();
+                return $this->JsonErrorI("Insersión realizada",200);
+            
+        } else {
+                $this->errconn = $this->conn->error;
+                $this->conn->close();     
+                return $this->JsonErrorI($this->errconn,500);     
+                }
+    
+    
+    
+    
+    
+}    
     
     
     

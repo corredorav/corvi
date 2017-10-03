@@ -116,9 +116,9 @@ else{
     
     <!--AJAX FORM-->  
         <!--<script src="../assets/js/jquery-3.1.0.min.js" type="text/javascript"></script>-->
-        <script src="../assets/js/jquery.form.js"></script>
+        <!--<script src="../assets/js/jquery.form.js"></script>-->
         <script src="../assets/js/SimpleAjaxUploader.js"></script>
-        <script src="../assets/js/simpleUpload.min.js"></script>
+        <!--<script src="../assets/js/simpleUpload.min.js"></script>-->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
@@ -261,43 +261,29 @@ window.onload = function() {
 };
 </script>
 <script>
-$(document).ready(function(){
- 
-    $('input[type=file]').change(function(){
- 
-        $(this).simpleUpload("u.php", {
- 
-            start: function(file){
-                //upload started 
-                $('#filename').html(file.name);
-                $('#progress').html("");
-                $('#progressBar').width(0);
-            },
- 
-            progress: function(progress){
-                //received progress 
-                $('#progress').html("Progress: " + Math.round(progress) + "%");
-                $('#progressBar').width(progress + "%");
-            },
- 
-            success: function(data){
-                //upload successful 
-                $('#progress').html("Success!<br>Data: " + JSON.stringify(data));
-            },
- 
-            error: function(error){
-                //upload failed 
-                $('#progress').html("Failure!<br>" + error.name + ": " + error.message);
-            }
- 
-        });
- 
-    });
- 
-});
-
-
-
+function submitForm() {
+            console.log("submit event");
+            var fd = new FormData(document.getElementById("fileinfo"));
+            var ch = $(".DocSelect:checked").val();
+            fd.append("label", $(".DocSelect:checked").val());
+            $.ajax({
+              url: "docupload.php",
+              type: "POST",
+              data: fd,
+              processData: false,  // tell jQuery not to process the data
+              contentType: false,   // tell jQuery not to set contentType
+              dataType: 'json'
+            }).done(function( data ) {
+                console.log("PHP Output:");
+                console.log( data );
+                $('#errorum_row').show(data.code);
+                $('#errorum').text(data.message);
+            });
+            return false;
+        }
+    
+    
+     
 
 </script>
     
@@ -674,14 +660,136 @@ $(document).ready(function(){
 			<div class="tab-pane" id="settings">
                                 <div class="card-content table-responsive table-full-width">
                                     <div class="container">
-		  
-                                        <div id="filename"></div>
-                                        <div id="progress"></div>
-                                        <div id="progressBar"></div>
-                                        <input type="file" name="file">
-                                
-                                    
-		
+                                        
+                                        
+                                        <form method="post" id="fileinfo" name="fileinfo" onsubmit="return submitForm();">
+                                        <label>Seleccione Archivo:</label><br>
+                                        <input type="file" name="file" required class="btn btn-default"/>
+                                        <input type="submit" value="Subir Archivo" />
+                                        
+                                        
+                                        <div id="output"></div>
+                                        <div class="card">
+	
+                                        <div class="card-content table-responsive table-full-width">
+                                                <table class="table">
+                                                <thead class="text-danger">
+                                                <th>Archivo</th>
+                                                <th>Eliminar</th>
+                                                </thead>
+                                           <tbody>
+				<tr>
+					<td>
+                                        <div class="radio">
+                                        <label>
+                                        <input type="radio" name="optionsRadios" class="DocSelect" value="cert_hipoteca">
+                                        Certificado Hipoteca
+                                        </label>
+                                        </div></td>
+					<td><i class="material-icons">check_circle</i><i class="material-icons">delete</i></td>
+				</tr>
+				<tr>
+				<td>
+                                        <div class="radio">
+                                        <label>
+                                        <input type="radio" name="optionsRadios" class="DocSelect" value="inscri_dominio">
+                                        Inscripcion Dominio
+                                        </label>
+                                        </div>
+                                </td>
+					<td><i class="material-icons">delete</i></td>	
+					
+				</tr>
+				<tr>
+				<td>
+                                        <div class="radio">
+                                        <label>
+                                        <input type="radio" name="optionsRadios" class="DocSelect" value="titulos_dominio">
+                                        Titulo de Dominio
+                                        </label>
+                                        </div>
+                                </td>
+					<td><i class="material-icons">delete</i></td>	
+					
+				</tr>
+                                <tr>
+				<td>
+                                        <div class="radio">
+                                        <label>
+                                        <input type="radio" name="optionsRadios" class="DocSelect" value="cert_avaluo">
+                                        Certificado Avaluo
+                                        </label>
+                                        </div>
+                                </td>
+					<td><i class="material-icons">delete</i></td>	
+					
+				</tr>
+                                <tr>
+				<td>
+                                        <div class="radio">
+                                        <label>
+                                        <input type="radio" name="optionsRadios" class="DocSelect" value="cert_deuda">
+                                        Certificado de Deuda
+                                        </label>
+                                        </div>
+                                </td>
+					<td><i class="material-icons">delete</i></td>	
+					
+				</tr>
+                                <tr>
+				<td>
+                                        <div class="radio">
+                                        <label>
+                                        <input type="radio" name="optionsRadios" class="DocSelect" value="cert_expro_muni">
+                                        Certificado de Expropiacion Mun.
+                                        </label>
+                                        </div>
+                                </td>
+					<td><i class="material-icons">delete</i></td>	
+					
+				</tr>
+                                <tr>
+				<td>
+                                        <div class="radio">
+                                        <label>
+                                        <input type="radio" name="optionsRadios" class="DocSelect" value="cert_expro_fisc">
+                                        Certificado de Expropiacion Fiscal.
+                                        </label>
+                                        </div>
+                                </td>
+					<td><i class="material-icons">delete</i></td>	
+					
+				</tr>
+                                <tr>
+				<td>
+                                        <div class="radio">
+                                        <label>
+                                        <input type="radio" name="optionsRadios" class="DocSelect" value="foto_planos">
+                                        Fotografías Plano
+                                        </label>
+                                        </div>
+                                </td>
+					<td><i class="material-icons">delete</i></td>	
+					
+				</tr>
+                                <tr>
+				<td>
+                                        <div class="radio">
+                                        <label>
+                                        <input type="radio" name="optionsRadios" class="DocSelect" value="cuen_basicas">
+                                        Cuentas Básicas
+                                        </label>
+                                        </div>
+                                </td>
+					<td><i class="material-icons">delete</i></td>	
+					
+				</tr>
+			</tbody>
+		</table>
+                                            
+	</div>
+</div>
+                                        </form>                       
                                     </div>       
                                 
                                 </div>

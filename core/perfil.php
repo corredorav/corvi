@@ -120,29 +120,29 @@ $data_perfil = $up->GetUserData();
  
     
      <!--AJAX -->  
-      <script src="../assets/js/jquery-3.1.0.min.js" type="text/javascript"></script>
+      <script src="../assets/js/jquery-3.1.0.min.js" type="text/javascript"></script>-->
       <script src="../assets/js/jquery.form.js"></script>
         
+
         <script>
-            
-            $(document).ready(function() {
+        $(document).ready(function() {
 
     // process the form
-    $('#perfil').submit(function(event) {
+    $('#update').submit(function(event) {
 
         // get the form data
         // there are many ways to get this data using jQuery (you can use the class or id also)
         var formData = {
-            'email'              : $('input[name=email]').val(),
-            'password'             : $('input[name=password]').val(),
-            'rut'    : $('input[name=rut]').val(),
-            'nombre'      : $('input[name=nombre]').val(),
-            'apellido'      : $('input[name=apellido]').val(),
-            'direccion'      : $('input[name=direccion]').val(),
-            'comuna'      : $('input[name=comuna]').val(),
-            'tcredito'      : $('input[name=tcredito]').val(),
-            'fvenc'      : $('input[name=fvenc]').val(),
-            'vali'      : $('input[name=vali]').val(),
+        'email' : $('input[name=email]').val(),
+        'password' : $('input[name=password]').val(),
+        'rut' : $('input[name=rut]').val(),
+        'nombre' : $('input[name=nombre]').val(),
+        'apellido' : $('input[name=apellido]').val(),
+        'direccion' : $('input[name=direccion]').val(),
+        'comuna' : $('#comuna').val(),
+        'tcredito' : $('input[name=tcredito]').val(),
+        'fvenc' : $('input[name=fvenc]').val(),
+        'vali' : $('input[name=vali]').val()
         };
 
         // process the form
@@ -151,13 +151,13 @@ $data_perfil = $up->GetUserData();
             url         : 'perfilp.php', // the url where we want to POST
             data        : formData, // our data object
             dataType    : 'json', // what type of data do we expect back from the server
-                        encode          : false
+                        encode          : true
         })
             // using the done promise callback
             .done(function(data) {
 
                 // log data to the console so we can see
-                console.log(data); 
+                console.log(data);
                 $('#errorum_row').show(data.code);
                 $('#errorum').text(data.message);
 
@@ -169,9 +169,17 @@ $data_perfil = $up->GetUserData();
     });
 
 });
-            
-            </script>
-    
+
+       
+
+        
+        
+       
+         
+     
+
+
+    </script>
     
     
     
@@ -329,7 +337,7 @@ $data_perfil = $up->GetUserData();
 									<p class="category">Complete su perfil</p>
 	                            </div>
 	                            <div class="card-content">
-                                        <form id="perfil" action="perfilp.php" method="post">
+                                        <form id="update" method="post" action="perfilp.php">
                                             <div class="row">
                                                 <div class="col-md-4">
 												<div class="form-group label-floating">
