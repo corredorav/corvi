@@ -264,7 +264,7 @@ window.onload = function() {
 function submitForm() {
             console.log("submit event");
             var fd = new FormData(document.getElementById("fileinfo"));
-            var ch = $(".DocSelect:checked").val();
+            
             fd.append("label", $(".DocSelect:checked").val());
             $.ajax({
               url: "docupload.php",
@@ -286,7 +286,32 @@ function submitForm() {
      
 
 </script>
-    
+  <script>
+     function Delete(){
+
+//make an ajax call and get status value using the same 'id'
+        var namedoc= $('input[name=namedoc]').val();
+        $.ajax({
+
+        type:"POST",//or POST
+        url:'deletep.php',
+        dataType: 'json',
+        
+                           //  (or whatever your url is)
+        data:{namedoc:namedoc},
+        //can send multipledata like {data1:var1,data2:var2,data3:var3
+        //can use dataType:'text/html' or 'json' if response type expected 
+        success:function(responsedata){
+               // process on data
+               //alert("got response as "+"'"+responsedata+"'");
+               $('#errorum_row').show(responsedata.code);
+               $('#errorum').text(responsedata.message);
+
+        }
+     });
+
+}
+</script>  
     
    
     
@@ -489,7 +514,8 @@ function submitForm() {
                         $r = $updater->DisplaySQLResults($sql);
                         $errl->ErrorFile($sql);
                         if(!empty($r)){
-                            $no_value = 1;    
+                            $no_value = 1;
+                            $_SESSION['rolid'] =  $r["rolid"];
                             }
                         ?>
 	<div class="card-content">
@@ -675,6 +701,7 @@ function submitForm() {
                                                 <table class="table">
                                                 <thead class="text-danger">
                                                 <th>Archivo</th>
+                                                <th>Estado</th>
                                                 <th>Eliminar</th>
                                                 </thead>
                                            <tbody>
@@ -686,7 +713,10 @@ function submitForm() {
                                         Certificado Hipoteca
                                         </label>
                                         </div></td>
-					<td><i class="material-icons">check_circle</i><i class="material-icons">delete</i></td>
+                                        <td><?php if ($updater->DocumentoListo("cert_hipoteca", $_SESSION["rolid"])==1){echo '<i class="material-icons">check_circle</i>';}else {echo '<i class="material-icons">warning</i>';} ?></td>
+                                        
+                                        <td><?php if ($updater->DocumentoListo("cert_hipoteca", $_SESSION["rolid"])==1){echo '<form action="deletep.php" method="POST"><input type="hidden" name="namedoc" value="cert_hipoteca"><a href="#" name="id" onClick="Delete()"><i class="material-icons">delete</i></a></form>';} ?>
+                                        </td>
 				</tr>
 				<tr>
 				<td>
@@ -697,7 +727,8 @@ function submitForm() {
                                         </label>
                                         </div>
                                 </td>
-					<td><i class="material-icons">delete</i></td>	
+					<td><?php if ($updater->DocumentoListo("inscri_dominio", $_SESSION["rolid"])==1){echo '<i class="material-icons">check_circle</i>';}else {echo '<i class="material-icons">warning</i>';} ?></td>
+                                        <td><?php if ($updater->DocumentoListo("inscri_dominio", $_SESSION["rolid"])==1){echo '<form action="deletep.php" method="POST"><input type="hidden" name="namedoc" value="inscri_dominio"><a href="#" name="id" onClick="Delete()"><i class="material-icons">delete</i></a></form>';} ?></td>	
 					
 				</tr>
 				<tr>
@@ -709,7 +740,8 @@ function submitForm() {
                                         </label>
                                         </div>
                                 </td>
-					<td><i class="material-icons">delete</i></td>	
+					<td><?php if ($updater->DocumentoListo("titulos_dominio", $_SESSION["rolid"])==1){echo '<i class="material-icons">check_circle</i>';}else {echo '<i class="material-icons">warning</i>';} ?></td>
+                                        <td><?php if ($updater->DocumentoListo("titulos_dominio", $_SESSION["rolid"])==1){echo '<form action="deletep.php" method="POST"><input type="hidden" name="namedoc" value="titulos_dominio"><a href="#" name="id" onClick="Delete()"><i class="material-icons">delete</i></a></form>';} ?></td>	
 					
 				</tr>
                                 <tr>
@@ -721,7 +753,8 @@ function submitForm() {
                                         </label>
                                         </div>
                                 </td>
-					<td><i class="material-icons">delete</i></td>	
+					<td><?php if ($updater->DocumentoListo("cert_avaluo", $_SESSION["rolid"])==1){echo '<i class="material-icons">check_circle</i>';}else {echo '<i class="material-icons">warning</i>';} ?></td>
+                                        <td><?php if ($updater->DocumentoListo("cert_avaluo", $_SESSION["rolid"])==1){echo '<form action="deletep.php" method="POST"><input type="hidden" name="namedoc" value="cert_avaluo"><a href="#" name="id" onClick="Delete()"><i class="material-icons">delete</i></a></form>';} ?></td>	
 					
 				</tr>
                                 <tr>
@@ -733,7 +766,8 @@ function submitForm() {
                                         </label>
                                         </div>
                                 </td>
-					<td><i class="material-icons">delete</i></td>	
+					<td><?php if ($updater->DocumentoListo("cert_deuda", $_SESSION["rolid"])==1){echo '<i class="material-icons">check_circle</i>';}else {echo '<i class="material-icons">warning</i>';} ?></td>
+                                        <td><?php if ($updater->DocumentoListo("cert_deuda", $_SESSION["rolid"])==1){echo '<form action="deletep.php" method="POST"><input type="hidden" name="namedoc" value="cert_deuda"><a href="#" name="id" onClick="Delete()"><i class="material-icons">delete</i></a></form>';} ?></td>	
 					
 				</tr>
                                 <tr>
@@ -745,7 +779,9 @@ function submitForm() {
                                         </label>
                                         </div>
                                 </td>
-					<td><i class="material-icons">delete</i></td>	
+					
+                                        <td><?php if ($updater->DocumentoListo("cert_expro_muni", $_SESSION["rolid"])==1){echo '<i class="material-icons">check_circle</i>';}else {echo '<i class="material-icons">warning</i>';} ?></td>
+                                        <td><?php if ($updater->DocumentoListo("cert_expro_muni", $_SESSION["rolid"])==1){echo '<form action="deletep.php" method="POST"><input type="hidden" name="namedoc" value="cert_expro_muni"><a href="#" name="id" onClick="Delete()"><i class="material-icons">delete</i></a></form>';} ?></td>	
 					
 				</tr>
                                 <tr>
@@ -757,7 +793,8 @@ function submitForm() {
                                         </label>
                                         </div>
                                 </td>
-					<td><i class="material-icons">delete</i></td>	
+					<td><?php if ($updater->DocumentoListo("cert_expro_fisc", $_SESSION["rolid"])==1){echo '<i class="material-icons">check_circle</i>';}else {echo '<i class="material-icons">warning</i>';} ?></td>
+                                        <td><?php if ($updater->DocumentoListo("cert_expro_fisc", $_SESSION["rolid"])==1){echo '<form action="deletep.php" method="POST"><input type="hidden" name="namedoc" value="cert_expro_fisc"><a href="#" name="id" onClick="Delete()"><i class="material-icons">delete</i></a></form>';} ?></td>	
 					
 				</tr>
                                 <tr>
@@ -769,7 +806,8 @@ function submitForm() {
                                         </label>
                                         </div>
                                 </td>
-					<td><i class="material-icons">delete</i></td>	
+					<td><?php if ($updater->DocumentoListo("foto_planos", $_SESSION["rolid"])==1){echo '<i class="material-icons">check_circle</i>';}else {echo '<i class="material-icons">warning</i>';} ?></td>
+                                        <td><?php if ($updater->DocumentoListo("foto_planos", $_SESSION["rolid"])==1){echo '<form action="deletep.php" method="POST"><input type="hidden" name="namedoc" value="foto_planos"><a href="#" name="id" onClick="Delete()"><i class="material-icons">delete</i></a></form>';} ?></td>	
 					
 				</tr>
                                 <tr>
@@ -781,7 +819,8 @@ function submitForm() {
                                         </label>
                                         </div>
                                 </td>
-					<td><i class="material-icons">delete</i></td>	
+					<td><?php if ($updater->DocumentoListo("cuen_basicas", $_SESSION["rolid"])==1){echo '<i class="material-icons">check_circle</i>';}else {echo '<i class="material-icons">warning</i>';} ?></td>
+                                        <td><?php if ($updater->DocumentoListo("cuen_basicas", $_SESSION["rolid"])==1){echo '<form action="deletep.php" method="POST"><input type="hidden" name="namedoc" value="cuen_basicas"><a href="#" name="id" onClick="Delete()"><i class="material-icons">delete</i></a></form>';} ?></td>	
 					
 				</tr>
 			</tbody>

@@ -106,6 +106,7 @@ function UploadDocs(){
     
 $JsonH = new UserSessions();
 $Myerr = New MyErrorHandler();
+$DocHandler = New SearchFindShow();
 
 if ($_POST["label"]) {
     $label = $_POST["label"];
@@ -144,11 +145,20 @@ if ((($_FILES["file"]["type"] == "image/gif")
         if (file_exists("../virtual/" . $filename)) {
             echo $JsonH->JsonErrorI($filename . " ya existe.",500);
             //echo $filename . " already exists. ";
+            return 0;
             
-        } else {
-            move_uploaded_file($_FILES["file"]["tmp_name"],
-            "../virtual/" . $filename);
+        } 
+        
+        $deco = json_decode($DocHandler->InsertDocIntoDB($_FILES["file"]["name"], $label, $_SESSION['rolid']));
+        
+        if (move_uploaded_file($_FILES["file"]["tmp_name"],"../virtual/" . $filename) && (int)$deco->{"code"}!== 500){
+        
+            
+            
             //echo "Stored in: " . "../virtual/" . $filename;
+            //$Myerr->ErrorFile(" ID DE SESSION ROLID" . $_SESSION['rolid']);
+            
+            
             echo $JsonH->JsonErrorI($_FILES["file"]["name"]." - $label subido exitosamente", 302);
         }
     }
