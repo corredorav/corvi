@@ -120,13 +120,14 @@ function Updater(){
       
       if ((int)$errfinal->{'code'}!=500){
           
-          echo $error = '{ "message": "Datos Actualizados", "code":"302"}';
+          echo $error = '{"message":"Datos Actualizados","code":"302"}';
+          //echo utf8_encode(json_encode($error));
           
           
       }else
       {
           
-          echo $error = '{ "message": "Error en la actualizacion", "code":"302"}';
+          echo $error = '{"message":"Error en la actualizacion","code":"302"}';
           
           
       }

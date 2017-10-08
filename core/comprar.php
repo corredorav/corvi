@@ -1,3 +1,85 @@
+<?php
+session_start();
+require_once '../classes/UserSessions.php';
+require_once '../classes/SearchFindShow.php';
+require_once '../classes/MyErrorHandler.php';
+
+
+
+/**
+ * 
+ * @Global Var
+ * 
+ */
+
+$correo = "";
+$errline = new MyErrorHandler();
+
+
+
+function SanityCheck(){
+    
+    global $correo;
+    
+if (isset($_SESSION['myemail'])){
+//desde sigin.php
+    
+    //echo "En sanity...";
+    
+    $correo = $_SESSION['myemail'];
+
+    return 1;
+
+    }
+        return 0;
+    }
+
+function redirect($url, $statusCode = 303)
+{
+   header('Location: ' . $url, true, $statusCode);
+   die();
+}
+
+
+//****
+//Valida la session contra Base de Datos
+
+function ShieldSession(){
+    
+    global $correo;
+        
+    //echo "Shield..";
+    
+      
+            $sess = new UserSessions(); 
+            //Echo "After Sanity...";
+            $Ecode =  $sess->CheckSessionInDb(session_id(),$correo);
+            //echo $Ecode;
+            
+        if ($Ecode!="302"){
+            
+            redirect("https://".$_SERVER['SERVER_NAME']."/corvi/core/acceso.php");
+            
+        
+        }
+      
+           
+      
+    
+    
+    
+}
+
+/// DECLARACION DE VARIABLE PARA PAGINAS
+
+$selected = New SearchFindShow();
+
+
+?>
+
+
+
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -26,24 +108,51 @@
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,300|Material+Icons' rel='stylesheet' type='text/css'>
     
+    <!--AJAX FORM-->  
+        <!--<script src="../assets/js/jquery-3.1.0.min.js" type="text/javascript"></script>-->
+        <!--<script src="../assets/js/jquery.form.js"></script>-->
+        <script src="../assets/js/SimpleAjaxUploader.js"></script>
+        <!--<script src="../assets/js/simpleUpload.min.js"></script>-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     
+	<script src="../assets/js/bootstrap.min.js" type="text/javascript"></script>
+	<script src="../assets/js/material.min.js" type="text/javascript"></script>
+
+	<!--  Notifications Plugin    -->
+	<script src="../assets/js/bootstrap-notify.js"></script>
+
+	<!-- Material Dashboard javascript methods -->
+	<script src="../assets/js/material-dashboard.js"></script>
     
+    <script type="text/javascript">
+        
+$(function(){
+$('#rolid').change(function(){
     
-    <!-- Core CSS file Vitrina Virtual-->
-    <link rel="stylesheet" href="../assets/css/photoswipe.css"> 
+    var formData = {
+        
+        'rolid' : $('#rolid').val()
+        
+        };
+    
+    $.ajax({
+        url: "comprarp.php",
+        dataType:"json",
+        type: "post",
+        data: formData,
+        success: function(data){
+           $('#errorum_row').show();
+           $('#errorum').text(data.mtscuad);
+        }
+    });
+});
+});
+      
+    </script>
 
-    <!-- Viirrina Virual
-     In the folder of skin CSS file there are also:
-     - .png and .svg icons sprite, 
-     - preloader.gif (for browsers that do not support CSS animations) -->
-    <link rel="stylesheet" href="../assets/css/default-skin.css"> 
-
-    <!-- Core JS file -->
-    <script src="../assets/js/photoswipe.min.js"></script> 
-
-    <!-- UI JS file -->
-    <script src="../assets/js/photoswipe-ui-default.min.js"></script> 
-    <!-- Fin CCS Vitrina Virtual-->
+    
     
 </head>
 
@@ -164,6 +273,30 @@
                 
                 
                 <div class="content">
+                    
+                    <div id="errorum_row" style="display: none;" class="row">
+                        <div class="col-lg-7">
+                                <div class="container-fluid">
+                                    <div class="alert alert-danger">
+                                            <div class="container-fluid">
+                                                <div class="alert-icon">
+                                                <i class="material-icons">error_outline</i>
+                                                </div>
+                                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                    <span aria-hidden="true"><i class="material-icons">clear</i></span>
+                                                </button>
+                                                <div id="errorum">
+                                                <b>Error Alert:</b> Panel de Errores
+                                                </div>
+                                            </div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    
                     <div class="card card-nav-tabs">
 	<div class="card-header" data-background-color="purple">
 		<div class="nav-tabs-navigation">
@@ -196,8 +329,8 @@
 	                                    <div class="row">
 	                                        <div class="col-md-3">
 												<div class="form-group label-floating">
-													<label class="control-label">ID</label>
-                                                                                                        <input type="text" class="form-control" disabled="">
+													
+                                                                                                        <?php  echo $selected->GetFavoriteComboOption($_SESSION['myemail']); ?>
 												</div>
 	                                        </div>
 	                                        

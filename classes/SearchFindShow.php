@@ -11,7 +11,7 @@
  *
  * @author lukasalarcon
  */
-
+//error_reporting(E_ERROR | E_PARSE);
 require_once '../classes/MyErrorHandler.php';
 
 $err = New MyErrorHandler();
@@ -159,6 +159,50 @@ $lrolid.",'".
     
     
 }   
+
+public function GetFavoriteComboOption($email){
+    
+   
+    
+  global $err;
+  $selected = '';
+
+    $sql = "SELECT rolid FROM favoritos where email='".$email."'";
+    
+    $err->ErrorFile($sql);
+    
+    $result = $this->conn->query($sql);
+    
+    $selected =  '</select>';
+
+    
+    if ( $result->num_rows > 0) {
+        
+        
+        //$err->ErrorFile("GetFavorite Combo - Ingresar");
+        
+        
+        while ($fila = $result->fetch_assoc()) {
+            
+          
+ 
+        
+        $selected =  '<option value="'.$fila["rolid"].'">'.$fila["rolid"].'</option>' . $selected;
+        
+        
+        //$err->ErrorFile("GetFavorite Combo - While -$selected");  
+        
+        
+        }    
+        } else {
+                
+            return 'No hay propiedades en favoritos';
+            
+                }  
+    
+    return $selected = '<select id="rolid">'.$selected; 
+    
+}
 
    
    
@@ -533,10 +577,224 @@ public function SearchEngine($comuna,$desde,$hasta,$dorm,$banos){
     
 }
 
+public function InsertDocIntoDB($NDoc,$TypeDoc,$rol){
+
+$TDoc = $TypeDoc;
+$NameDoc = $NDoc;
+$rolid = $rol;
+$Er = New MyErrorHandler();
+
+    switch ($TDoc) {
+        case "cert_hipoteca":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',1,'$NameDoc',1)";     
+
+            break;
+        case "inscri_dominio":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',2,'$NameDoc',1)";
+
+            break;
+        case "titulos_dominio":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',3,'$NameDoc',1)";
+            
+            break;
+        case "inscri_dominio":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',4,'$NameDoc',1)";
+
+            break;
+        case "titulos_dominio":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',5,'$NameDoc',1)";
+
+            break;
+        case "cert_avaluo":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',6,'$NameDoc',1)";
+
+            break;
+        case "cert_deuda":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',7,'$NameDoc',1)";
+
+            break;
+        case "cert_expro_muni":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',8,'$NameDoc',1)";
+            
+            break;
+        case "cert_expro_fisc":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',9,'$NameDoc',1)";
+            
+            break;
+        case "foto_planos":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',10,'$NameDoc',1)";
+            
+            break;
+        case "cuen_basicas":
+
+            $sql="INSERT INTO `docperbraiz` (`rolid`,`docid`,`nombre_doc`,`ready`) VALUES ('$rolid',11,'$NameDoc',1)";
+            
+            break;
+  
+        default:
+            break;
+    }
+    
+    $Er->ErrorFile($sql);
+ 
+  
+   if ($this->conn->query($sql) > 0) {
+                $this->conn->close();
+                return $this->JsonErrorI("Insersión realizada",302);
+            
+        } else {
+                $this->errconn = $this->conn->error;
+                $this->conn->close();     
+                return $this->JsonErrorI($this->errconn,500);     
+                }
     
     
     
     
+    
+}    
+    
+public function DocumentoListo($docx,$rolx){
+    
+    $docid = $docx;
+    $rolid = $rolx;
+    
+    global $err;
+    
+    //$sql = "SELECT ready FROM docperbraiz where rolid='$rolid' and docid=$docid";
+    $sql ="(SELECT ready FROM docperbraiz INNER JOIN  tipos_docs ON tipos_docs.iddocs = docperbraiz.docid where tipos_docs.nom_doc='$docid' and rolid=$rolid)";
+    
+    $err->ErrorFile("Documento Listo ".$sql);
+    
+    $results = $this->conn->query($sql);
+    
+   if (mysqli_num_rows($results)==0)
+    {
+        
+        return 0;    
+    }
+    
+
+    if (($results->num_rows !== 0) ) {
+                
+                return 1;
+            
+        } else {
+                   
+                return 0;    
+                }
+    
+    
+    
+    
+    
+    
+    
+}    
+    
+private function EliminaDocDisco($docx,$rolx,$correo){
+    
+    $sess = new UserSessions();
+    
+    $lcorreo = $correo;
+    $df = $docx;
+    $rolid=$rolx;
+    $fold = $sess->GetIDforFolder($lcorreo);
+    
+    global $err;
+    
+    
+    
+    
+ 
+    $sql ="SELECT nombre_doc FROM docperbraiz INNER JOIN  tipos_docs ON tipos_docs.iddocs = docperbraiz.docid where tipos_docs.nom_doc='$df' and rolid=$rolid";
+    
+    $err->ErrorFile($sql);
+    
+    
+   if ($res = $this->conn->query($sql)) {
+               
+                //return $this->JsonErrorI("Insersión realizada",302);
+       
+                $nom_doc = $res->fetch_assoc();
+
+                $file_to_delete = trim($nom_doc["nombre_doc"]);
+                
+                
+                
+                $finalf = "../virtual/".$fold."/docs/$file_to_delete";
+                
+                $err->ErrorFile("Archivo para Borrar... $finalf");
+                
+                if (is_file($finalf)){
+                    return (unlink($finalf)?$this->JsonErrorI("Archivo Borrado",302):$this->JsonErrorI("No se puede borrar archivo",500));
+                }
+                    else { return $this->JsonErrorI("Problema ubicacion de archivo $finalf",500); }
+            
+        } else {
+                $this->errconn = $this->conn->error;
+                   
+                return $this->JsonErrorI($this->errconn,500);     
+                }
+                
+                
+}
+
+
+
+public function EliminaDocDB($docx,$rolx,$correo){
+    
+    //*****************
+    // a) Intenta eliminar archivo de disco
+    // b) Si es exitoso,
+    // c) Procede a eliminar registro de la base de datos
+    //*****************
+    
+    
+    $doc = $docx;
+    $rolid = $rolx;
+    $lcorreo = $correo;
+    
+      
+    
+  global $err;
+  
+  $errJson = json_decode($this->EliminaDocDisco($docx,$rolx,$lcorreo));
+  
+  if ((int)$errJson->{'code'}!=500){
+
+    $sql = "DELETE docperbraiz FROM docperbraiz INNER JOIN  tipos_docs ON tipos_docs.iddocs = docperbraiz.docid where tipos_docs.nom_doc='$doc' and rolid=$rolid";
+    
+    $err->ErrorFile($sql);
+    
+    $result = $this->conn->query($sql);
+    
+    $err->ErrorFile("EliminaDocDb->resultado Eliminacion $result");
+    
+    if ( $result == false) {
+ 
+                return $this->JsonErrorI("Error al eliminar Documento $doc de Base de Datos",500);
+            
+        } else {
+                return $this->JsonErrorI("Documento $doc Eliminado",302);;     
+                } 
+    
+  }
+  
+  return $this->JsonErrorI($errJson->{'message'}, 500);
+    
+    
+}
     
     
     
