@@ -160,6 +160,50 @@ $lrolid.",'".
     
 }   
 
+public function GetFavoriteComboOption($email){
+    
+   
+    
+  global $err;
+  $selected = '';
+
+    $sql = "SELECT rolid FROM favoritos where email='".$email."'";
+    
+    $err->ErrorFile($sql);
+    
+    $result = $this->conn->query($sql);
+    
+    $selected =  '</select>';
+
+    
+    if ( $result->num_rows > 0) {
+        
+        
+        //$err->ErrorFile("GetFavorite Combo - Ingresar");
+        
+        
+        while ($fila = $result->fetch_assoc()) {
+            
+          
+ 
+        
+        $selected =  '<option value="'.$fila["rolid"].'">'.$fila["rolid"].'</option>' . $selected;
+        
+        
+        //$err->ErrorFile("GetFavorite Combo - While -$selected");  
+        
+        
+        }    
+        } else {
+                
+            return 'No hay propiedades en favoritos';
+            
+                }  
+    
+    return $selected = '<select id="rolid">'.$selected; 
+    
+}
+
    
    
 public function CountAllRows($sql){
@@ -686,7 +730,11 @@ private function EliminaDocDisco($docx,$rolx,$correo){
 
                 $file_to_delete = trim($nom_doc["nombre_doc"]);
                 
+                
+                
                 $finalf = "../virtual/".$fold."/docs/$file_to_delete";
+                
+                $err->ErrorFile("Archivo para Borrar... $finalf");
                 
                 if (is_file($finalf)){
                     return (unlink($finalf)?$this->JsonErrorI("Archivo Borrado",302):$this->JsonErrorI("No se puede borrar archivo",500));
@@ -704,7 +752,7 @@ private function EliminaDocDisco($docx,$rolx,$correo){
 
 
 
-public function EliminaDocDB($docx,$rolx){
+public function EliminaDocDB($docx,$rolx,$correo){
     
     //*****************
     // a) Intenta eliminar archivo de disco
@@ -715,12 +763,13 @@ public function EliminaDocDB($docx,$rolx){
     
     $doc = $docx;
     $rolid = $rolx;
+    $lcorreo = $correo;
     
       
     
   global $err;
   
-  $errJson = json_decode($this->EliminaDocDisco($docx,$rolx));
+  $errJson = json_decode($this->EliminaDocDisco($docx,$rolx,$lcorreo));
   
   if ((int)$errJson->{'code'}!=500){
 
